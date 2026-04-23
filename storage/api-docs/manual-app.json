@@ -1,0 +1,120 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "IdeaBridge API",
+        "description": "API documentation for IdeaBridge project",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/auth/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register a new user",
+                "operationId": "2c537ca990d53cb5f9fb6cbd978245cd",
+                "responses": {
+                    "201": {
+                        "description": "User registered"
+                    }
+                }
+            }
+        },
+        "/api/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login a user",
+                "operationId": "7f4516fd463ec0bddc660538186044a9",
+                "responses": {
+                    "200": {
+                        "description": "User logged in"
+                    }
+                }
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout a user",
+                "operationId": "100da3f6c9cb1f145c817999e8845b08",
+                "responses": {
+                    "200": {
+                        "description": "User logged out"
+                    }
+                }
+            }
+        },
+        "/api/categories": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "List all categories",
+                "operationId": "17e0a20948c0fdf1b37230ade207aaee",
+                "responses": {
+                    "200": {
+                        "description": "List of categories"
+                    }
+                }
+            }
+        },
+        "/api/ideas": {
+            "get": {
+                "tags": [
+                    "Ideas"
+                ],
+                "summary": "List all ideas",
+                "operationId": "691d7cbc7ec4fb96ea85bcf72cf54cea",
+                "responses": {
+                    "200": {
+                        "description": "List of ideas"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Ideas"
+                ],
+                "summary": "Create a new idea",
+                "operationId": "2eaaed09bc5b4b02107a61c67ba6ed0c",
+                "responses": {
+                    "201": {
+                        "description": "Idea created"
+                    }
+                }
+            }
+        },
+        "/api/users/ideas": {
+            "get": {
+                "tags": [
+                    "Ideas"
+                ],
+                "summary": "List user ideas",
+                "operationId": "bb019a2db73c015be2d8f96787081b6e",
+                "responses": {
+                    "200": {
+                        "description": "List of user ideas"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
+            "name": "Categories",
+            "description": "Categories"
+        },
+        {
+            "name": "Ideas",
+            "description": "Ideas"
+        }
+    ]
+}

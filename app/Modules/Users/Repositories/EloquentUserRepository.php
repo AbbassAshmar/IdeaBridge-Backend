@@ -2,33 +2,67 @@
 
 namespace App\Modules\Users\Repositories;
 
+use App\Exceptions\UserRepositoryError;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class EloquentUserRepository implements UserRepositoryInterface
 {
     public function findUserByEmail(string $email): ?array
     {
-        $user = User::query()->where('email', $email)->first();
+        try {
+            $user = User::query()->where('email', $email)->first();
 
-        return $user ? $this->mapUser($user, true) : null;
+            return $user ? $this->mapUser($user, true) : null;
+        } catch (Throwable $throwable) {
+            Log::error('Failed to find user by email.', [
+                'email' => $email,
+                'exception' => class_basename($throwable),
+                'error' => $throwable->getMessage(),
+            ]);
+
+            throw (new UserRepositoryError('Unable to load user by email.'))->causeBy($throwable);
+        }
     }
 
     public function createUser(array $userData): array
     {
-        $user = User::query()->create([
-            'username' => (string) $userData['username'],
-            'email' => (string) $userData['email'],
-            'password' => (string) $userData['password'],
-        ]);
+        try {
+            $user = User::query()->create([
+                'username' => (string) $userData['username'],
+                'email' => (string) $userData['email'],
+                'password' => (string) $userData['password'],
+            ]);
 
-        return $this->mapUser($user);
+            return $this->mapUser($user);
+        } catch (Throwable $throwable) {
+            Log::error('Failed to create user.', [
+                'username' => (string) ($userData['username'] ?? ''),
+                'email' => (string) ($userData['email'] ?? ''),
+                'exception' => class_basename($throwable),
+                'error' => $throwable->getMessage(),
+            ]);
+
+            throw (new UserRepositoryError('Unable to create user.'))->causeBy($throwable);
+        }
     }
 
     public function findUserById(int $userId): ?array
     {
-        $user = User::query()->find($userId);
+        try {
+            $user = User::query()->find($userId);
 
-        return $user ? $this->mapUser($user) : null;
+            return $user ? $this->mapUser($user) : null;
+        } catch (Throwable $throwable) {
+            Log::error('Failed to find user by ID.', [
+                'user_id' => $userId,
+                'exception' => class_basename($throwable),
+                'error' => $throwable->getMessage(),
+            ]);
+
+            throw (new UserRepositoryError('Unable to load user by ID.'))->causeBy($throwable);
+        }
     }
 
     /**

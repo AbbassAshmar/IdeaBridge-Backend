@@ -4,6 +4,7 @@ namespace App\Modules\Ideas\Repositories;
 
 use App\Exceptions\IdeaRepositoryError;
 use App\Models\Idea;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class EloquentIdeaRepository implements IdeaRepositoryInterface
@@ -19,6 +20,12 @@ class EloquentIdeaRepository implements IdeaRepositoryInterface
                 ->map(fn (Idea $idea): array => $this->mapIdea($idea))
                 ->all();
         } catch (Throwable $throwable) {
+            Log::error('Failed to load ideas for owner from repository.', [
+                'owner_user_id' => $ownerUserId,
+                'exception' => class_basename($throwable),
+                'error' => $throwable->getMessage(),
+            ]);
+
             throw (new IdeaRepositoryError('Unable to load ideas for the requested user.'))->causeBy($throwable);
         }
     }
@@ -58,6 +65,17 @@ class EloquentIdeaRepository implements IdeaRepositoryInterface
                 ],
             ];
         } catch (Throwable $throwable) {
+            Log::error('Failed to load ideas list from repository.', [
+                'filters' => [
+                    'page' => (int) ($filters['page'] ?? 1),
+                    'limit' => (int) ($filters['limit'] ?? 15),
+                    'q' => (string) ($filters['q'] ?? ''),
+                    'sort' => (string) ($filters['sort'] ?? 'desc'),
+                ],
+                'exception' => class_basename($throwable),
+                'error' => $throwable->getMessage(),
+            ]);
+
             throw (new IdeaRepositoryError('Unable to load ideas.'))->causeBy($throwable);
         }
     }
@@ -78,6 +96,13 @@ class EloquentIdeaRepository implements IdeaRepositoryInterface
 
             return $this->mapIdea($idea);
         } catch (Throwable $throwable) {
+            Log::error('Failed to create idea in repository.', [
+                'user_id' => (int) ($ideaData['user_id'] ?? 0),
+                'category_id' => (int) ($ideaData['category_id'] ?? 0),
+                'exception' => class_basename($throwable),
+                'error' => $throwable->getMessage(),
+            ]);
+
             throw (new IdeaRepositoryError('Unable to create the idea.'))->causeBy($throwable);
         }
     }

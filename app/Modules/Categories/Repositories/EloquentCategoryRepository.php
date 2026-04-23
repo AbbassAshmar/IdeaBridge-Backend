@@ -4,6 +4,7 @@ namespace App\Modules\Categories\Repositories;
 
 use App\Exceptions\CategoryRepositoryError;
 use App\Models\IdeaCategory;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class EloquentCategoryRepository implements CategoryRepositoryInterface
@@ -17,6 +18,11 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
                 ->map(fn (IdeaCategory $category): array => $this->mapCategory($category))
                 ->all();
         } catch (Throwable $throwable) {
+            Log::error('Failed to load all categories from repository.', [
+                'exception' => class_basename($throwable),
+                'error' => $throwable->getMessage(),
+            ]);
+
             throw (new CategoryRepositoryError('Unable to load categories.'))->causeBy($throwable);
         }
     }
@@ -28,6 +34,12 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
 
             return $category ? $this->mapCategory($category) : null;
         } catch (Throwable $throwable) {
+            Log::error('Failed to load category by ID from repository.', [
+                'category_id' => $categoryId,
+                'exception' => class_basename($throwable),
+                'error' => $throwable->getMessage(),
+            ]);
+
             throw (new CategoryRepositoryError('Unable to load the requested category.'))->causeBy($throwable);
         }
     }

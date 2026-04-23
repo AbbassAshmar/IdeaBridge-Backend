@@ -57,3 +57,20 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## API Documentation (Swagger)
+
+This project uses **L5 Swagger** to document all API endpoints.
+
+- Swagger UI URL: `/api/documentation`
+- OpenAPI JSON URL: `/docs`
+
+Generate or refresh the docs after API changes:
+
+```bash
+php artisan l5-swagger:generate
+```
+
+The main OpenAPI definition file is:
+
+- `app/OpenApi/ApiDocumentation.php`
