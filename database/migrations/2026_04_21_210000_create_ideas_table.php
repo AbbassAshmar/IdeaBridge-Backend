@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained('ideas_categories')->restrictOnDelete();
             $table->string('title', 255);
             $table->text('description');
-            $table->enum('status', ['open', 'in progress', 'done'])->default('open');
+            $table->enum('status', ['available', 'in progress', 'done'])->default('available');
             $table->timestamps();
 
             $table->index(['user_id', 'status']);

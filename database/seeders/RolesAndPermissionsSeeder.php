@@ -16,7 +16,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $permissions = [
             'list ideas',
             'view ideas',
-            'create idea',
+            'add idea',
             'take idea',
             'update idea',
             'manage comments',
@@ -42,7 +42,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $userRole->syncPermissions([
             'list ideas',
             'view ideas',
-            'create idea',
+            'add idea',
             'manage comments',
         ]);
 

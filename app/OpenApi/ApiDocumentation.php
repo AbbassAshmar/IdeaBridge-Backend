@@ -30,7 +30,7 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(property="username", type="string", example="john_dev"),
  *     @OA\Property(property="email", type="string", format="email", example="john@example.com"),
  *     @OA\Property(property="roles", type="array", @OA\Items(type="string", example="Developer")),
- *     @OA\Property(property="permissions", type="array", @OA\Items(type="string", example="create idea")),
+ *     @OA\Property(property="permissions", type="array", @OA\Items(type="string", example="add idea")),
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2026-04-22T10:15:35Z"),
  *     @OA\Property(property="updated_at", type="string", format="date-time", example="2026-04-22T10:15:35Z")
  * )
@@ -49,12 +49,17 @@ use OpenApi\Annotations as OA;
  *     type="object",
  *     @OA\Property(property="id", type="integer", example=45),
  *     @OA\Property(property="user_id", type="integer", example=12),
+ *     @OA\Property(property="user", ref="#/components/schemas/UserResource"),
  *     @OA\Property(property="taken_by_user_id", type="integer", nullable=true, example=null),
+ *     @OA\Property(property="taken_by_user", ref="#/components/schemas/UserResource", nullable=true),
  *     @OA\Property(property="category_id", type="integer", example=3),
  *     @OA\Property(property="category", ref="#/components/schemas/CategoryResource"),
  *     @OA\Property(property="title", type="string", example="Add dark mode toggle"),
  *     @OA\Property(property="description", type="string", example="Implement user-selectable dark mode for the UI."),
- *     @OA\Property(property="status", type="string", example="open"),
+ *     @OA\Property(property="status", type="string", example="available"),
+ *     @OA\Property(property="upvotes_count", type="integer", example=25),
+ *     @OA\Property(property="downvotes_count", type="integer", example=3),
+ *     @OA\Property(property="user_vote", type="string", enum={"upvote", "downvote", "neutral"}, example="upvote"),
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2026-04-22T10:15:35Z"),
  *     @OA\Property(property="updated_at", type="string", format="date-time", example="2026-04-22T10:15:35Z")
  * )
@@ -329,6 +334,48 @@ use OpenApi\Annotations as OA;
  *     ),
  *     @OA\Response(response=401, description="Unauthenticated", @OA\JsonContent(ref="#/components/schemas/AuthErrorEnvelope")),
  *     @OA\Response(response=403, description="Missing permission", @OA\JsonContent(ref="#/components/schemas/AuthorizationErrorEnvelope")),
+ *     @OA\Response(response=422, description="Validation failed", @OA\JsonContent(ref="#/components/schemas/ValidationErrorEnvelope")),
+ *     @OA\Response(response=500, description="Server error", @OA\JsonContent(ref="#/components/schemas/ServerErrorEnvelope"))
+ * )
+ *
+ * @OA\Put(
+ *     path="/api/ideas/{ideaId}/interactions",
+ *     tags={"Ideas"},
+ *     summary="Set current user interaction on an idea",
+ *     security={{"sanctum": {}}},
+ *     @OA\Parameter(name="ideaId", in="path", required=true, @OA\Schema(type="integer", minimum=1), example=45),
+ *     requestBody=@OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             type="object",
+ *             required={"state"},
+ *             @OA\Property(property="state", type="string", enum={"upvote", "downvote", "neutral"}, example="upvote")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Interaction updated",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(
+ *                 property="data",
+ *                 type="object",
+ *                 @OA\Property(
+ *                     property="interaction",
+ *                     type="object",
+ *                     @OA\Property(property="idea_id", type="integer", example=45),
+ *                     @OA\Property(property="user_id", type="integer", example=12),
+ *                     @OA\Property(property="user_vote", type="string", enum={"upvote", "downvote", "neutral"}, example="upvote"),
+ *                     @OA\Property(property="upvotes_count", type="integer", example=26),
+ *                     @OA\Property(property="downvotes_count", type="integer", example=3)
+ *                 )
+ *             ),
+ *             @OA\Property(property="error", nullable=true, example=null),
+ *             @OA\Property(property="meta", type="object", example={})
+ *         )
+ *     ),
+ *     @OA\Response(response=401, description="Unauthenticated", @OA\JsonContent(ref="#/components/schemas/AuthErrorEnvelope")),
+ *     @OA\Response(response=404, description="Idea not found", @OA\JsonContent(ref="#/components/schemas/ServerErrorEnvelope")),
  *     @OA\Response(response=422, description="Validation failed", @OA\JsonContent(ref="#/components/schemas/ValidationErrorEnvelope")),
  *     @OA\Response(response=500, description="Server error", @OA\JsonContent(ref="#/components/schemas/ServerErrorEnvelope"))
  * )

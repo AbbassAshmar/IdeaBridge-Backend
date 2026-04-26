@@ -21,7 +21,7 @@ class IdeasService
     {
         try {
             $response = [
-                'ideas' => $this->ideaRepository->findIdeasByOwnerId($authenticatedUserId),
+                'ideas' => $this->ideaRepository->findIdeasByOwnerId($authenticatedUserId, $authenticatedUserId),
             ];
 
             Log::info('Loaded ideas for authenticated user.', [
@@ -53,12 +53,13 @@ class IdeasService
      * @param  array<string, mixed>  $filters
      * @return array<string, mixed>
      */
-    public function listIdeas(array $filters): array
+    public function listIdeas(array $filters, int $authenticatedUserId): array
     {
         try {
-            $response = $this->ideaRepository->findIdeas($filters);
+            $response = $this->ideaRepository->findIdeas($filters, $authenticatedUserId);
 
             Log::info('Ideas list loaded with filters.', [
+                'user_id' => $authenticatedUserId,
                 'page' => (int) ($filters['page'] ?? 1),
                 'limit' => (int) ($filters['limit'] ?? 15),
                 'has_search' => trim((string) ($filters['q'] ?? '')) !== '',
@@ -67,6 +68,7 @@ class IdeasService
             return $response;
         } catch (IdeaRepositoryError $throwable) {
             Log::error('Unable to load ideas due to repository error.', [
+                'user_id' => $authenticatedUserId,
                 'exception' => class_basename($throwable),
                 'error' => $throwable->getMessage(),
             ]);
@@ -74,6 +76,7 @@ class IdeasService
             throw (new IdeasDomainError('Unable to load ideas.'))->causeBy($throwable);
         } catch (Throwable $throwable) {
             Log::error('Unable to load ideas due to unexpected error.', [
+                'user_id' => $authenticatedUserId,
                 'exception' => class_basename($throwable),
                 'error' => $throwable->getMessage(),
             ]);
@@ -123,6 +126,52 @@ class IdeasService
             ]);
 
             throw (new IdeasDomainError('Unable to create the idea.'))->causeBy($throwable);
+        }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function updateInteraction(int $ideaId, int $authenticatedUserId, string $state): array
+    {
+        try {
+            if (! $this->ideaRepository->existsById($ideaId)) {
+                throw new IdeasDomainError('The requested idea was not found.', status: 404);
+            }
+
+            $response = [
+                'interaction' => $this->ideaRepository->setIdeaInteraction($ideaId, $authenticatedUserId, $state),
+            ];
+
+            Log::info('Idea interaction updated successfully.', [
+                'idea_id' => $ideaId,
+                'user_id' => $authenticatedUserId,
+                'state' => $state,
+            ]);
+
+            return $response;
+        } catch (IdeasDomainError $throwable) {
+            throw $throwable;
+        } catch (IdeaRepositoryError $throwable) {
+            Log::error('Unable to update idea interaction due to repository error.', [
+                'idea_id' => $ideaId,
+                'user_id' => $authenticatedUserId,
+                'state' => $state,
+                'exception' => class_basename($throwable),
+                'error' => $throwable->getMessage(),
+            ]);
+
+            throw (new IdeasDomainError('Unable to update idea interaction.'))->causeBy($throwable);
+        } catch (Throwable $throwable) {
+            Log::error('Unable to update idea interaction due to unexpected error.', [
+                'idea_id' => $ideaId,
+                'user_id' => $authenticatedUserId,
+                'state' => $state,
+                'exception' => class_basename($throwable),
+                'error' => $throwable->getMessage(),
+            ]);
+
+            throw (new IdeasDomainError('Unable to update idea interaction.'))->causeBy($throwable);
         }
     }
 }

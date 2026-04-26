@@ -680,6 +680,153 @@
                 ]
             }
         },
+        "/api/ideas/{ideaId}/interactions": {
+            "put": {
+                "tags": [
+                    "Ideas"
+                ],
+                "summary": "Set current user interaction on an idea",
+                "operationId": "1fc3cff0aebc03d1e13ecb3d5bad3773",
+                "parameters": [
+                    {
+                        "name": "ideaId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        },
+                        "example": 45
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "state"
+                                ],
+                                "properties": {
+                                    "state": {
+                                        "type": "string",
+                                        "example": "upvote",
+                                        "enum": [
+                                            "upvote",
+                                            "downvote",
+                                            "neutral"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Interaction updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "interaction": {
+                                                    "properties": {
+                                                        "idea_id": {
+                                                            "type": "integer",
+                                                            "example": 45
+                                                        },
+                                                        "user_id": {
+                                                            "type": "integer",
+                                                            "example": 12
+                                                        },
+                                                        "user_vote": {
+                                                            "type": "string",
+                                                            "example": "upvote",
+                                                            "enum": [
+                                                                "upvote",
+                                                                "downvote",
+                                                                "neutral"
+                                                            ]
+                                                        },
+                                                        "upvotes_count": {
+                                                            "type": "integer",
+                                                            "example": 26
+                                                        },
+                                                        "downvotes_count": {
+                                                            "type": "integer",
+                                                            "example": 3
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "error": {
+                                            "example": null,
+                                            "nullable": true
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "example": []
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Idea not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServerErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServerErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/categories": {
             "get": {
                 "tags": [
@@ -786,7 +933,7 @@
                         "type": "array",
                         "items": {
                             "type": "string",
-                            "example": "create idea"
+                            "example": "add idea"
                         }
                     },
                     "created_at": {
@@ -835,9 +982,20 @@
                         "type": "integer",
                         "example": 12
                     },
+                    "user": {
+                        "$ref": "#/components/schemas/UserResource"
+                    },
                     "taken_by_user_id": {
                         "type": "integer",
                         "example": null,
+                        "nullable": true
+                    },
+                    "taken_by_user": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/UserResource"
+                            }
+                        ],
                         "nullable": true
                     },
                     "category_id": {
@@ -857,7 +1015,24 @@
                     },
                     "status": {
                         "type": "string",
-                        "example": "open"
+                        "example": "available"
+                    },
+                    "upvotes_count": {
+                        "type": "integer",
+                        "example": 25
+                    },
+                    "downvotes_count": {
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "user_vote": {
+                        "type": "string",
+                        "example": "upvote",
+                        "enum": [
+                            "upvote",
+                            "downvote",
+                            "neutral"
+                        ]
                     },
                     "created_at": {
                         "type": "string",
@@ -1089,6 +1264,30 @@
                                 "description": {
                                     "type": "string",
                                     "example": "Allow quick navigation between sections with shortcuts."
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "ApiDocumentation": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "required": [
+                                "state"
+                            ],
+                            "properties": {
+                                "state": {
+                                    "type": "string",
+                                    "example": "upvote",
+                                    "enum": [
+                                        "upvote",
+                                        "downvote",
+                                        "neutral"
+                                    ]
                                 }
                             },
                             "type": "object"
