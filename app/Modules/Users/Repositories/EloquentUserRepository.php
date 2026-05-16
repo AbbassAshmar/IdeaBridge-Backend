@@ -65,6 +65,31 @@ class EloquentUserRepository implements UserRepositoryInterface
         }
     }
 
+    public function updateUserById(int $userId, array $userData): array
+    {
+        try {
+            $user = User::query()->findOrFail($userId);
+            $user->fill([
+                'username' => (string) $userData['username'],
+                'email' => (string) $userData['email'],
+            ]);
+            $user->save();
+            $user->refresh();
+
+            return $this->mapUser($user);
+        } catch (Throwable $throwable) {
+            Log::error('Failed to update user profile.', [
+                'user_id' => $userId,
+                'username' => (string) ($userData['username'] ?? ''),
+                'email' => (string) ($userData['email'] ?? ''),
+                'exception' => class_basename($throwable),
+                'error' => $throwable->getMessage(),
+            ]);
+
+            throw (new UserRepositoryError('Unable to update user profile.'))->causeBy($throwable);
+        }
+    }
+
     /**
      * @return array<string, mixed>
      */

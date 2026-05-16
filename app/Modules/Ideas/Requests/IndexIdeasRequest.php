@@ -4,6 +4,7 @@ namespace App\Modules\Ideas\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+
 class IndexIdeasRequest extends FormRequest
 {
     public function authorize(): bool
