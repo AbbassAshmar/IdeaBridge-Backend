@@ -686,7 +686,7 @@
                     "Ideas"
                 ],
                 "summary": "Set current user interaction on an idea",
-                "operationId": "1fc3cff0aebc03d1e13ecb3d5bad3773",
+                "operationId": "0f40d3251bd2b9a1776a8368721a63bf",
                 "parameters": [
                     {
                         "name": "ideaId",
