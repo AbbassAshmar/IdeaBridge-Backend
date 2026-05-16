@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Modules\Ideas\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -19,10 +19,16 @@ class IdeaResource extends JsonResource
             'user_id' => (int) ($idea['user_id'] ?? 0),
             'taken_by_user_id' => isset($idea['taken_by_user_id']) ? (int) $idea['taken_by_user_id'] : null,
             'category_id' => (int) ($idea['category_id'] ?? 0),
+            'user' => $idea['user'] ?? null,
+            'taken_by_user' => $idea['taken_by_user'] ?? null,
             'category' => $idea['category'] ?? null,
             'title' => (string) ($idea['title'] ?? ''),
             'description' => (string) ($idea['description'] ?? ''),
             'status' => (string) ($idea['status'] ?? ''),
+            'is_taken' => (bool) ($idea['is_taken'] ?? false),
+            'can_take' => (bool) ($idea['can_take'] ?? false),
+            'can_leave' => (bool) ($idea['can_leave'] ?? false),
+            'can_complete' => (bool) ($idea['can_complete'] ?? false),
             'upvotes_count' => (int) ($idea['upvotes_count'] ?? 0),
             'downvotes_count' => (int) ($idea['downvotes_count'] ?? 0),
             'user_vote' => (string) ($idea['user_vote'] ?? 'neutral'),

@@ -6,6 +6,8 @@ use App\Modules\Auth\Repositories\AuthRepositoryInterface;
 use App\Modules\Auth\Repositories\EloquentAuthRepository;
 use App\Modules\Categories\Repositories\CategoryRepositoryInterface;
 use App\Modules\Categories\Repositories\EloquentCategoryRepository;
+use App\Modules\Comments\Repositories\CommentRepositoryInterface;
+use App\Modules\Comments\Repositories\EloquentCommentRepository;
 use App\Modules\Ideas\Repositories\EloquentIdeaRepository;
 use App\Modules\Ideas\Repositories\IdeaRepositoryInterface;
 use App\Modules\Users\Repositories\EloquentUserRepository;
@@ -23,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(UserRepositoryInterface::class, EloquentUserRepository::class);
         $this->app->bind(IdeaRepositoryInterface::class, EloquentIdeaRepository::class);
         $this->app->bind(CategoryRepositoryInterface::class, EloquentCategoryRepository::class);
+        $this->app->bind(CommentRepositoryInterface::class, EloquentCommentRepository::class);
     }
 
     /**

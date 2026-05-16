@@ -68,6 +68,21 @@ class User extends Authenticatable
         return $this->hasMany(IdeaInteraction::class);
     }
 
+    public function ideaComments(): HasMany
+    {
+        return $this->hasMany(IdeaComment::class);
+    }
+
+    public function commentInteractions(): HasMany
+    {
+        return $this->hasMany(CommentInteraction::class);
+    }
+
+    public function ideaUpdates(): HasMany
+    {
+        return $this->hasMany(IdeaUpdate::class);
+    }
+
     public function interactedIdeas(): BelongsToMany
     {
         return $this->belongsToMany(Idea::class, 'idea_interactions')

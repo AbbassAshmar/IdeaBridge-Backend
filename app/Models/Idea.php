@@ -44,6 +44,18 @@ class Idea extends Model
         return $this->hasMany(IdeaInteraction::class);
     }
 
+    public function comments(): HasMany
+    {
+        return $this->hasMany(IdeaComment::class)
+            ->whereNull('root_comment_id')
+            ->orderByDesc('created_at');
+    }
+
+    public function updates(): HasMany
+    {
+        return $this->hasMany(IdeaUpdate::class)->latest();
+    }
+
     public function interactingUsers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'idea_interactions')
