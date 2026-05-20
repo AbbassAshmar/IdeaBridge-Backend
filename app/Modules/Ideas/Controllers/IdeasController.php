@@ -95,6 +95,13 @@ class IdeasController extends Controller
         return response()->json(ResponseHelper::success($response));
     }
 
+    public function delete(int $ideaId, Request $request): JsonResponse
+    {
+        $this->ideasService->deleteIdea($ideaId, (int) $request->user()->id);
+
+        return response()->json(ResponseHelper::success());
+    }
+
     public function developerPortfolio(Request $request): JsonResponse
     {
         $response = $this->ideasService->getDeveloperPortfolio((int) $request->user()->id);

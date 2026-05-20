@@ -8,6 +8,7 @@ Route::middleware(['auth:sanctum', 'permission:list ideas'])->get('/ideas/{ideaI
 Route::middleware(['auth:sanctum', 'permission:list ideas'])->get('/users/ideas', [IdeasController::class, 'userIndex']);
 Route::middleware(['auth:sanctum', 'permission:list ideas'])->get('/users/developer-ideas', [IdeasController::class, 'developerPortfolio']);
 Route::middleware(['auth:sanctum', 'permission:add idea'])->post('/ideas', [IdeasController::class, 'store']);
+Route::middleware(['auth:sanctum'])->delete('/ideas/{ideaId}', [IdeasController::class, 'delete']);
 Route::middleware(['auth:sanctum'])->put('/ideas/{ideaId}/interactions', [IdeasController::class, 'updateInteraction']);
 Route::middleware(['auth:sanctum'])->post('/ideas/{ideaId}/take', [IdeasController::class, 'take']);
 Route::middleware(['auth:sanctum'])->post('/ideas/{ideaId}/leave', [IdeasController::class, 'leave']);

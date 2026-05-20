@@ -365,6 +365,48 @@ class IdeasService
         }
     }
 
+    public function deleteIdea(int $ideaId, int $authenticatedUserId): void
+    {
+        try {
+            $idea = $this->ideaRepository->findIdeaById($ideaId, $authenticatedUserId);
+
+            if (! $idea) {
+                throw new IdeasDomainError('The requested idea was not found.', status: 404);
+            }
+
+            if ((int) ($idea['user_id'] ?? 0) !== $authenticatedUserId) {
+                throw new IdeasDomainError('You can only delete your own ideas.', status: 403);
+            }
+
+            $this->ideaRepository->deleteIdea($ideaId);
+
+            Log::info('Idea deleted successfully.', [
+                'idea_id' => $ideaId,
+                'user_id' => $authenticatedUserId,
+            ]);
+        } catch (IdeasDomainError $throwable) {
+            throw $throwable;
+        } catch (IdeaRepositoryError $throwable) {
+            Log::error('Unable to delete idea due to repository error.', [
+                'idea_id' => $ideaId,
+                'user_id' => $authenticatedUserId,
+                'exception' => class_basename($throwable),
+                'error' => $throwable->getMessage(),
+            ]);
+
+            throw (new IdeasDomainError('Unable to delete the idea.'))->causeBy($throwable);
+        } catch (Throwable $throwable) {
+            Log::error('Unable to delete idea due to unexpected error.', [
+                'idea_id' => $ideaId,
+                'user_id' => $authenticatedUserId,
+                'exception' => class_basename($throwable),
+                'error' => $throwable->getMessage(),
+            ]);
+
+            throw (new IdeasDomainError('Unable to delete the idea.'))->causeBy($throwable);
+        }
+    }
+
     /**
      * @return array<string, mixed>
      */

@@ -299,6 +299,21 @@ class EloquentIdeaRepository implements IdeaRepositoryInterface
         }
     }
 
+    public function deleteIdea(int $ideaId): void
+    {
+        try {
+            Idea::query()->whereKey($ideaId)->delete();
+        } catch (Throwable $throwable) {
+            Log::error('Failed to delete idea in repository.', [
+                'idea_id' => $ideaId,
+                'exception' => class_basename($throwable),
+                'error' => $throwable->getMessage(),
+            ]);
+
+            throw (new IdeaRepositoryError('Unable to delete the idea.'))->causeBy($throwable);
+        }
+    }
+
     private function baseIdeasQuery(int $authenticatedUserId)
     {
         return Idea::query()

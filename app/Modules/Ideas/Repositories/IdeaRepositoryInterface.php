@@ -52,4 +52,6 @@ interface IdeaRepositoryInterface
      * @return array<string, mixed>
      */
     public function createIdeaUpdate(int $ideaId, int $userId, string $text): array;
+
+    public function deleteIdea(int $ideaId): void;
 }
